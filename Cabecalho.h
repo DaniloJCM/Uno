@@ -1,44 +1,38 @@
-typedef struct carta Carta;
-typedef struct baralho Baralho;
-typedef struct descarte Descarte;
-typedef struct maoNo MaoNo;
-typedef struct mao MaoDoJogador;
-typedef struct jogador Jogador;
 typedef struct listaJogadores ListaJogadores;
 typedef struct pessoas Pessoas;
 
-struct carta{
+typedef struct carta{
     char cor;//pode receber -> 'r': (red)vermelho, 'g': (green)verde, 'b': (blue)azul, 'y': (yellow)amarelo, 'p': preta
     char simbolo;//pode receber -> 0 a 9: números, 'b': bloqueio, 'i': inverte, 'd': +2, 'q': +4, 't': trocar a cor
-    Carta *prox;
-};
+    struct carta *prox;
+} Carta;
 
 //1ª Pilha
-struct descarte{
+typedef struct descarte{
     Carta *topo;
-};
+} Descarte;
 
 //2ª Pilha
-struct baralho{
+typedef struct baralho{
     Carta *topo;
-};
+} Baralho;
 
-struct maoNo{
+typedef struct maoNo{
     Carta *carta;
-    MaoNo *prox;
-};
+    struct maoNo *prox;
+} MaoNo;
 
-struct mao{
+typedef struct mao{
     MaoNo *prim;
-};
+} MaoDoJogador;
 
 
-struct jogador{
+typedef struct jogador{
     char nome[30];
     int qtasCartas;
     int estaEmUno;
     MaoDoJogador *mao;
-}; 
+} Jogador; 
 
 //Protótipos funções
 Baralho* pegaBaralhoNovo();
