@@ -5,6 +5,7 @@
 #include "Funcoes.c"
 
 int main(){
+    limparTela();
     srand(time(NULL)); //Concerta o bug do randômico ser sempre o mesmo
     Baralho *baralho = pegaBaralhoNovo();
     Descarte *descarte = criaDescarte();
@@ -19,6 +20,10 @@ int main(){
     insereCartasNaMao(jogador->mao, &card2);
 
     imprimeMao(jogador);
+    delayNaTela(3);
+    printf("Digite um numero de 1 a 10\n");
+    int num = lerNumero(1, 10);
+    printf("Numero recebido: %d\n", num);
 }
 
    /*printf("Descarte:\n");
