@@ -1,7 +1,58 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <unistd.h>
 
 #include "Cabecalho.h"
+
+#pragma region Leitura válida
+int ehNumero(char *texto){
+    int analisado = 0, ehNumero = 1, tamanhoTexto = strlen(texto);
+
+    while(analisado < tamanhoTexto && analisado < 50 && ehNumero){
+        if(!isdigit(texto[analisado]) && texto[analisado] != '\n') ehNumero = 0;
+        analisado++;
+    }
+    if(strlen(texto) > 5) ehNumero = 0;
+
+    return ehNumero;
+}
+
+int lerNumero(int valorMinimo, int valorMaximo){
+    char texto[50];
+    int numero = -1;
+
+    do{
+        scanf("%50s", texto);
+
+        if(ehNumero(texto)){
+            numero = 0;
+            for(int casa = 0; casa < strlen(texto); casa++) numero = (numero * 10) + (texto[casa] - '0');
+
+            if(numero < valorMinimo || numero > valorMaximo){
+                printf("O numero %d nao eh valido! Tente novamente:\n", numero);
+                numero = -1;
+            }
+        }
+        else printf("Voce nao escreveu um numero! Tente novamente:\n");
+    } while(numero < 0);
+
+    return numero;
+}
+#pragma endregion
+
+#pragma region Console
+void limparTela(){
+    system("cls||clear");
+    printf("----------UNO----------\n");
+}
+
+void delayNaTela(int segundos){
+    sleep(segundos);
+    limparTela();
+}
+#pragma endregion
 
 #pragma region Cria objetos
 Baralho* pegaBaralhoNovo(){
@@ -71,6 +122,7 @@ Carta popDescarte(Descarte *esse){
 }
 #pragma endregion
 
+#pragma region Relacionados baraho
 void embaralharQuantasVezes(Baralho *b, int max, int vezes){
     if(b->topo){
         vezes *= max;
@@ -106,7 +158,6 @@ void criaEInsereCartaNoBaralho(Baralho *b, char simbolo, char cor){
 }
 
 void inicializaBaralho(Baralho *b){
-    printf("Inicializando baralho!\n");
 
     int qualCarta;
     char corAtual[4] = {'r', 'g', 'b', 'y'};
@@ -141,9 +192,9 @@ void inicializaDescarte(Descarte *d, Baralho *b){
 
     pushDescarte(d, essaCarta);
 }
+#pragma endregion
 
-
-// CODIGOS REFERENTES A MAO DOS JOGADORES // 
+#pragma region Mao dos jogadores
 MaoDoJogador *criaMao(){
     MaoDoJogador *mao = (MaoDoJogador *) malloc (sizeof(MaoDoJogador));
     mao->prim = NULL;
@@ -159,11 +210,13 @@ void insereCartasNaMao(MaoDoJogador *mao, Carta *carta){
 }
 
 void imprimeMao(Jogador *jogador){
-    printf("O jogador: %s esta com\n", jogador->nome);
+    int carta = 1;
+    printf("O jogador %s esta com:\n", jogador->nome);
 
     MaoNo *no;
     for(no = jogador->mao->prim; no != NULL; no = no->prox){
-        printf("/ %c - %c  /  ", no->carta->cor, no->carta->simbolo);
+        printf("Carta %d. /%c - %c/\n", carta, no->carta->cor, no->carta->simbolo);
+        carta++;
     }
     printf("\n");
 
@@ -171,10 +224,13 @@ void imprimeMao(Jogador *jogador){
 
 Jogador *registraJogador(){
     Jogador *jg = (Jogador *) malloc (sizeof(Jogador));
-    scanf("%s", jg->nome);
+    printf("Insira seu nome:\n");
+    scanf("%30s", jg->nome);
+    fflush(stdin);
     jg->mao = criaMao();
     jg->estaEmUno = 0;
     jg->qtasCartas = 0; 
 
     return jg;
 }
+#pragma endregion
