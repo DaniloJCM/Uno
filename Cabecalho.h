@@ -30,7 +30,6 @@ typedef struct mao{
     MaoNo *prim;
 } MaoDoJogador;
 
-
 typedef struct jogador{
     char nome[30];
     int qtasCartas;
@@ -48,12 +47,13 @@ typedef struct pessoas{
     PessoasNo *prim;
 } Pessoas;
 
-//Protótipos funções
-Baralho* pegaBaralhoNovo();
+//Cria objetos
+Baralho* pegaBaralhoNovo(); //Cria e retorna um baralho
 
-Descarte* criaDescarte();
+Descarte* criaDescarte(); //Cria e retorna um descarte
 
-void inserirCartaNoBaralho(Baralho *b, Carta *c);
+//Manipula pilhas 
+void inserirCartaNoBaralho(Baralho *b, Carta *c); 
 
 void inicializaBaralho(Baralho *b);
 
@@ -61,6 +61,7 @@ Carta popBaralho(Baralho *esse);
 
 void inicializaDescarte(Descarte *d, Baralho *b);
 
+//Jogadores
 Jogador* registraJogador();
 
 void imprimeMaoDoJogador(Jogador *jogador);
