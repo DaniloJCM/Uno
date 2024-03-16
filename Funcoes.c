@@ -152,8 +152,11 @@ MaoDoJogador *criaMao(){
 }
 
 Jogador *registraJogador(){
+    fflush(stdin);
     Jogador *jg = (Jogador *) malloc (sizeof(Jogador));
-    scanf("%[^\n]", jg->nome);
+    printf("Digite o nome do jogador:\n");
+    scanf("%[^\n]30s%\n", jg->nome);
+    fflush(stdin);
     jg->mao = criaMao();
     jg->estaEmUno = 0;
     jg->qtasCartas = 0; 
