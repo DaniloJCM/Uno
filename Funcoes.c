@@ -1,8 +1,62 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-
+#include <string.h>
+#include <unistd.h>
 #include "Cabecalho.h"
+
+#define leituraMaxima 50
+
+#pragma region LeituraValida
+int ehNumero(char *texto){
+    int analisado = 0, ehNumero = 1, tamanhoTexto = strlen(texto);
+
+    while(analisado < tamanhoTexto && analisado < leituraMaxima && ehNumero){
+        if(!isdigit(texto[analisado])){
+            if(texto[analisado] != '\n') ehNumero = 0;
+        }
+        analisado++;
+    }
+
+    if(strlen(texto) > 5) ehNumero = 0;
+
+    return ehNumero;
+}
+
+int lerNumero(int valorMinimo, int valorMaximo){
+    char texto[leituraMaxima];
+    int numero = -1, ehValido = 0;
+
+    do{
+        scanf("%s", texto);
+
+        if(ehNumero(texto)){
+            numero = 0;
+            for(int casa = 0; casa < strlen(texto); casa++) numero = (numero * 10) + (texto[casa] - '0');
+
+            if(numero < valorMinimo || numero > valorMaximo){
+                printf("O numero %d nao eh valido! Tente novamente:\n", numero);
+                numero = -1;
+            }
+        }
+        else printf("Voce nao escreveu um numero! Tente novamente:\n");
+    } while(numero < 0);
+
+    return numero;
+}
+#pragma endregion
+
+#pragma region Console
+void limparTela(){
+    system("cls || clear");
+    printf(white"----------- "blue"U"yellow"N"red"O"white" -----------\n\n");
+}
+
+void delayNaTela(float segundos){
+    sleep(segundos);
+    limparTela();
+}
+#pragma endregion
 
 #pragma region Cria objetos
 Baralho* pegaBaralhoNovo(){
@@ -72,6 +126,7 @@ Carta popDescarte(Descarte *esse){
 }
 #pragma endregion
 
+#pragma region Das Cartas
 void embaralharQuantasVezes(Baralho *b, int max, int vezes){
     if(b->topo){
         vezes *= max;
@@ -142,9 +197,9 @@ void inicializaDescarte(Descarte *d, Baralho *b){
 
     pushDescarte(d, essaCarta);
 }
+#pragma endregion
 
-
-// CODIGOS REFERENTES AOS JOGADORES // 
+#pragma region Jogadores
 MaoDoJogador *criaMao(){
     MaoDoJogador *mao = (MaoDoJogador *) malloc (sizeof(MaoDoJogador));
     mao->prim = NULL;
@@ -154,7 +209,7 @@ MaoDoJogador *criaMao(){
 Jogador *registraJogador(){
     fflush(stdin);
     Jogador *jg = (Jogador *) malloc (sizeof(Jogador));
-    printf("Digite o nome do jogador:\n");
+    printf("Digite o nome do novo jogador:\n");
     scanf("%[^\n]30s%\n", jg->nome);
     fflush(stdin);
     jg->mao = criaMao();
@@ -234,61 +289,59 @@ void imprimeMaoDoJogador(Jogador *jogador){
     }
     printf("\n");
 }
+#pragma endregion
 
-
+#pragma region Pessoas
 // CODIGOS REFERENTES AS PESSOAS //
-
 Pessoas *criaPessoa(){
     Pessoas *p = (Pessoas *) malloc (sizeof(Pessoas));
     p->prim = NULL;
     return p;
 }
 
-void inserePessoas(Pessoas *pessoa, Jogador *j){
+void inserePessoas(Pessoas *pessoas, Jogador *j){
     PessoasNo *novaPessoa = malloc(sizeof(PessoasNo));
     novaPessoa->jogador = j;
 
-    if(pessoa->prim == NULL){
+    if(pessoas->prim == NULL){
         novaPessoa->prox = novaPessoa;
         novaPessoa->ant = novaPessoa;
-        pessoa->prim = novaPessoa;
+        pessoas->prim = novaPessoa;
     }
     else{
-        PessoasNo *no = pessoa->prim;
-        novaPessoa->prox = pessoa->prim;
-        novaPessoa->ant =  pessoa->prim->ant;
-        pessoa->prim->ant->prox = novaPessoa;
-        pessoa->prim->ant = novaPessoa;
-        pessoa->prim = novaPessoa;
+        PessoasNo *no = pessoas->prim;
+        novaPessoa->prox = pessoas->prim;
+        novaPessoa->ant =  pessoas->prim->ant;
+        pessoas->prim->ant->prox = novaPessoa;
+        pessoas->prim->ant = novaPessoa;
+        pessoas->prim = novaPessoa;
     }
 }
 
 void inicializaPessoas(Pessoas *pessoas){
     int numJogadores;
-    printf("Escolha a quantidade de jogadores: ");
-    scanf("%d", &numJogadores);
+    printf("Escolha a quantidade de jogadores (Minimo 2 e maximo 9):\n");
+    numJogadores = lerNumero(2, 9);
     
-    Jogador *jogador[numJogadores];
     for(int i = 0; i < numJogadores; i++){
-        jogador[i] = registraJogador();
-        inserePessoas(pessoas, jogador[i]);
+        Jogador *esseJogador = registraJogador();
+        inserePessoas(pessoas, esseJogador);
     }
 }
 
-void reparteAsCartas(Baralho *baralho, Pessoas *pessoa){
-    PessoasNo *p = pessoa->prim;
-    Carta *carta = (Carta *) malloc (7 * sizeof(Carta));
+void reparteAsCartas(Baralho *baralho, Pessoas *pessoas){
+    PessoasNo *p = pessoas->prim;
     do {
         for(int i = 0; i < 7; i++){
-            carta[i] = popBaralho(baralho);
-            printf(" Carta %d: %c %c  /  ", i, carta[i].simbolo, carta[i].cor);
-            insereCartasNoJogador(p->jogador, &carta[i]); // em todas as chamadas estao sendo registrados os valores para todos os jogadores do pessoas;
+            Carta *essaCarta = malloc(sizeof(Carta));
+            *essaCarta = popBaralho(baralho);
+            printf(" Carta %d: %c %c  /  ", i, essaCarta->simbolo, essaCarta->cor);
+            insereCartasNoJogador(p->jogador, essaCarta); // em todas as chamadas estao sendo registrados os valores para todos os jogadores do pessoas;
         }
         printf("\n");
     
         p = p->prox;
-
-    } while(p != pessoa->prim);
+    } while(p != pessoas->prim);
 
     printf("\n\n");    
 }
@@ -303,3 +356,4 @@ void imprimePessoas(Pessoas *pessoas){
     } while(p != pessoas->prim);
     printf("\n");
 }
+#pragma endregion
