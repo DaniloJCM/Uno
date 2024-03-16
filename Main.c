@@ -6,6 +6,7 @@
 #include "Funcoes.c"
 
 int main(){
+    limparTela();
     srand(time(NULL)); //Concerta o bug do randômico ser sempre o mesmo
     Baralho *baralho = pegaBaralhoNovo();
     Descarte *descarte = criaDescarte();
@@ -20,12 +21,10 @@ int main(){
         insereCartasNoJogador(jog, &carta[i]);
     }
     imprimeMaoDoJogador(jog);
-
-}
-
-/// Teste para concertar bug ///
-/*    Pessoas *pessoas = criaPessoa();
+    
+    delayNaTela(5);
+    Pessoas *pessoas = criaPessoa();
     inicializaPessoas(pessoas);
     reparteAsCartas(baralho, pessoas);
     imprimePessoas(pessoas);
-*/
+}
