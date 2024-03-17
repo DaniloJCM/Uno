@@ -20,7 +20,7 @@ int main(){
 //    imprimePessoas(pessoas);
 
     PessoasNo *p = pessoas->prim;
-    for(int cont = 0; cont < 5; cont++){
+    for(int cont = 0; cont < 10; cont++){
         jogadaDe(descarte, p->jogador);
         p = p->prox;
     }
