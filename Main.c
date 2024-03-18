@@ -13,15 +13,21 @@ int main(){
     inicializaBaralho(baralho);
     inicializaDescarte(descarte, baralho);
 
-//    delayNaTela(5);
     Pessoas *pessoas = criaPessoa();
     inicializaPessoas(pessoas);
     reparteAsCartas(baralho, pessoas);
+    delayNaTela(2);
 //    imprimePessoas(pessoas);
 
     PessoasNo *p = pessoas->prim;
-    for(int cont = 0; cont < 10; cont++){
-        jogadaDe(descarte, p->jogador);
-        p = p->prox;
+    while(!alguemGanhou(pessoas)){
+        jogadaDe(baralho, descarte, p->jogador);
+        if(!alguemGanhou(pessoas)){
+            if(inversao) p = p->prox;
+            else p = p->ant;
+        }
+        delayNaTela(3);
     }
+
+    printf("%s ganhou!\n", p->jogador->nome);
 }
